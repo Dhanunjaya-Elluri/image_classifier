@@ -1,10 +1,13 @@
 from pathlib import Path
+from typing import List
+
 import numpy as np
 import onnxruntime as ort
-from PIL import Image
 from loguru import logger
+from PIL import Image
 from scipy.special import softmax
-from typing import List
+
+from .preprocessing import preprocess_image
 
 
 class ImageClassifier:
@@ -20,20 +23,10 @@ class ImageClassifier:
             labels = [line.strip() for line in f.readlines()]
         return labels
 
-    def preprocess_image(self, image: Image.Image, size: tuple[int, int]) -> np.ndarray:
-        # Resize and preprocess image
-        image = image.resize(size)
-        image_array = np.array(image)
-        # Normalize to [0,1] and convert to NCHW format
-        image_array = image_array.transpose(2, 0, 1)
-        image_array = image_array / 255.0
-        image_array = image_array.astype(np.float32)
-        return np.expand_dims(image_array, axis=0)
-
     def predict(
         self, image: Image.Image, size: tuple[int, int]
     ) -> List[tuple[str, float]]:
-        input_array = self.preprocess_image(image, size)
+        input_array = preprocess_image(image, size)
         input_name = self.session.get_inputs()[0].name
         output_name = self.session.get_outputs()[0].name
 

@@ -1,15 +1,14 @@
 """Service for fetching monitoring metrics"""
 
 import requests
-import pandas as pd
-import numpy as np
+
 from ..core.config import settings
 
 
 class MonitoringService:
     def __init__(
         self,
-        prometheus_url: str = "http://localhost:9090",
+        prometheus_url: str = settings.PROMETHEUS_URL,
     ):
         self.prometheus_url = prometheus_url
         self.timeout = 5

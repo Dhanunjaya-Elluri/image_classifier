@@ -1,8 +1,9 @@
 """Main Streamlit application"""
 
 import streamlit as st
-from src.ui.pages import classification_page, model_info_page, monitoring_page
+
 from src.core.config import settings
+from src.ui.pages import classification_page, model_info_page, monitoring_page
 from src.ui.styles import CUSTOM_CSS
 
 # Configure page settings

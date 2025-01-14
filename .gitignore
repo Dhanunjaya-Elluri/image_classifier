@@ -3,4 +3,12 @@ __pycache__/
 
 .venv/
 
+# Streamlit
+.streamlit/
+data/
+
+# Project specific
 Aufgabe für Stelle 3363.pdf
+models/
+
+.DS_Store

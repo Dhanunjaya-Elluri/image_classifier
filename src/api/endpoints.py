@@ -1,13 +1,9 @@
-from fastapi import APIRouter, UploadFile, File
-from PIL import Image
-import io
+from fastapi import APIRouter, File, UploadFile
 
-from fastapi.responses import PlainTextResponse
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from ..classifier.preprocessing import validate_image
 from ..core.config import settings
-from .schemas import PredictionResponse, PredictionItem, ModelInfo
 from ..services.inference import get_classifier
-from .dependencies import validate_image
+from .schemas import ModelInfo, PredictionItem, PredictionResponse
 
 router = APIRouter()
 
@@ -45,8 +41,3 @@ async def get_model_info():
         input_shape=list(input_details.shape),
         output_shape=list(output_details.shape),
     )
-
-@router.get("/metrics", include_in_schema=False)
-async def metrics():
-    """Return metrics in Prometheus format"""
-    return PlainTextResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)

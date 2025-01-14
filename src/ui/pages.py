@@ -1,16 +1,14 @@
 """UI pages for the Streamlit application"""
 
+import time
+
+import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from PIL import Image
-import pandas as pd
-import numpy as np
-from .components import (
-    create_predictions_plot,
-    display_model_metrics,
-)
+
 from ..services.api import APIService
-import plotly.graph_objects as go
-import time
+from .components import create_predictions_plot, display_model_metrics
 
 api_service = APIService()
 
@@ -23,6 +21,17 @@ async def classification_page():
         unsafe_allow_html=True,
     )
 
+    # Initialize session states
+    if "classification_results" not in st.session_state:
+        st.session_state.classification_results = None
+    if "uploaded_image" not in st.session_state:
+        st.session_state.uploaded_image = None
+
+    def clear_results():
+        """Clear all results and uploaded image"""
+        st.session_state.classification_results = None
+        st.session_state.uploaded_image = None
+
     col1, col2 = st.columns(2)
 
     with col1:
@@ -33,9 +42,12 @@ async def classification_page():
             "Drag and drop file here",
             type=["jpg", "jpeg", "png"],
             help="Limit 200MB per file • PNG, JPG, JPEG",
+            key="image_uploader",
+            on_change=clear_results,  # Clear everything when file uploader changes
         )
 
         if uploaded_file:
+            st.session_state.uploaded_image = uploaded_file
             image = Image.open(uploaded_file)
             st.image(image, use_container_width=True)
 
@@ -44,10 +56,13 @@ async def classification_page():
                 classify_button = st.button("Classify Image", use_container_width=True)
 
     with col2:
-        if uploaded_file and classify_button:
+        if st.session_state.uploaded_image and classify_button:
             try:
                 with st.spinner("Processing image..."):
-                    prediction = await api_service.predict(uploaded_file.getvalue())
+                    prediction = await api_service.predict(
+                        st.session_state.uploaded_image.getvalue()
+                    )
+                    st.session_state.classification_results = prediction
 
                     # Create and display the predictions plot
                     fig = create_predictions_plot(prediction.predictions)
@@ -68,12 +83,13 @@ async def classification_page():
                 '<div class="image-label">🎯 Classification Results</div>',
                 unsafe_allow_html=True,
             )
-            st.markdown(
-                '<div style="color: #C6CDD5; text-align: center; padding: 2rem;">'
-                'Upload an image and click "Classify Image" to see the results here.'
-                "</div>",
-                unsafe_allow_html=True,
-            )
+            if not uploaded_file:  # Only show placeholder when no file is uploaded
+                st.markdown(
+                    '<div style="color: #C6CDD5; text-align: center; padding: 2rem;">'
+                    'Upload an image and click "Classify Image" to see the results here.'
+                    "</div>",
+                    unsafe_allow_html=True,
+                )
 
 
 async def model_info_page():
@@ -106,7 +122,6 @@ async def model_info_page():
 async def monitoring_page():
     """Monitoring page content"""
     from ..services.monitoring import MonitoringService
-    import time
 
     monitoring_service = MonitoringService()
 

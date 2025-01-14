@@ -1,5 +1,6 @@
 from functools import lru_cache
-from ..img_classifier.classifier import ImageClassifier
+
+from ..classifier.classifier import ImageClassifier
 from ..core.config import settings
 
 

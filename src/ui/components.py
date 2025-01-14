@@ -1,10 +1,12 @@
 """UI components for the Streamlit application"""
 
-import streamlit as st
-import plotly.graph_objects as go
+from typing import List
+
 import pandas as pd
-from typing import Dict, List
-from ..api.schemas import PredictionItem, ModelInfo
+import plotly.graph_objects as go
+import streamlit as st
+
+from ..api.schemas import ModelInfo, PredictionItem
 
 
 def create_predictions_plot(predictions: List[PredictionItem]) -> go.Figure:

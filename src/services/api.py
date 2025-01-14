@@ -1,9 +1,11 @@
 """API service layer"""
 
-from typing import Dict, List, Optional
+from typing import Optional
+
 import requests
+
+from ..api.schemas import ModelInfo, PredictionResponse
 from ..core.config import settings
-from ..api.schemas import PredictionResponse, ModelInfo
 
 
 class APIService:
