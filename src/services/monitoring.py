@@ -3,7 +3,7 @@
 import requests
 
 from ..core.config import settings
-from ..core.exceptions import APIConnectionError
+from ..core.exceptions import PrometheusConnectionError
 
 
 class MonitoringService:
@@ -101,4 +101,6 @@ class MonitoringService:
             }
 
         except requests.exceptions.RequestException as e:
-            raise APIConnectionError(f"Failed to fetch metrics: {str(e)}")
+            raise PrometheusConnectionError(
+                "Unable to connect to Prometheus server"
+            ) from e

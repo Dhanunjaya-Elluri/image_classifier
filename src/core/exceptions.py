@@ -23,3 +23,9 @@ class ValidationError(Exception):
     def __init__(self, message: str = "Validation error occurred"):
         self.message = message
         super().__init__(self.message)
+
+
+class PrometheusConnectionError(Exception):
+    """Raised when unable to connect to Prometheus server"""
+
+    pass

@@ -4,9 +4,8 @@ from typing import List
 
 import pandas as pd
 import plotly.graph_objects as go
-import streamlit as st
 
-from ..api.schemas import ModelInfo, PredictionItem
+from ..api.schemas import PredictionItem
 
 
 def create_predictions_plot(predictions: List[PredictionItem]) -> go.Figure:
@@ -58,11 +57,3 @@ def create_predictions_plot(predictions: List[PredictionItem]) -> go.Figure:
     )
 
     return fig
-
-
-def display_model_metrics(info: ModelInfo) -> None:
-    """Display model metrics in columns"""
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Model Architecture", info.name)
-    col2.metric("Input Shape", " × ".join(map(str, info.input_shape)))
-    col3.metric("Output Shape", " × ".join(map(str, info.output_shape)))
