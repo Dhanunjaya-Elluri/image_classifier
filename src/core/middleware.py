@@ -24,7 +24,7 @@ class MonitoringMiddleware(BaseHTTPMiddleware):
     """Middleware to monitor prediction requests and latency"""
 
     async def dispatch(self, request: Request, call_next):
-        # Only monitor the prediction endpoint
+        # Monitor only prediction latencies
         if not request.url.path.endswith("/predict"):
             return await call_next(request)
 
@@ -32,7 +32,6 @@ class MonitoringMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         duration = time.time() - start_time
 
-        # Record metrics only for prediction requests
         PREDICTION_REQUESTS.labels(status=response.status_code).inc()
 
         PREDICTION_LATENCY.observe(duration)

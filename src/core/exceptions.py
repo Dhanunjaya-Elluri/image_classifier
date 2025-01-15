@@ -28,4 +28,6 @@ class ValidationError(Exception):
 class PrometheusConnectionError(Exception):
     """Raised when unable to connect to Prometheus server"""
 
-    pass
+    def __init__(self, message: str = "Failed to connect to Prometheus server"):
+        self.message = message
+        super().__init__(self.message)

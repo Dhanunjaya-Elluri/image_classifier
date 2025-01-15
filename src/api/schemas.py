@@ -17,3 +17,7 @@ class ModelInfo(BaseModel):
     description: str
     input_shape: List[int]
     output_shape: List[int]
+
+
+class HealthCheckResponse(BaseModel):
+    status: str

@@ -1,0 +1,33 @@
+# Version control
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+venv/
+ENV/
+
+# Development
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+models/
+data/
+.streamlit/
+README.md
+Dockerfile
+docker-compose.yml
+prometheus.yml
+.dockerignore
+
+# OS specific
+.DS_Store

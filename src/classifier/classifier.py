@@ -8,11 +8,21 @@ from PIL import Image
 from scipy.special import softmax
 
 from ..core.exceptions import ModelError
-from .preprocessing import preprocess_image
+from ..utils.preprocessing import preprocess_image
 
 
 class ImageClassifier:
     def __init__(self, model_path: Path, labels_path: Path):
+        """ImageClassifier for image classification.
+
+        Args:
+            model_path: Path to the ONNX model file
+            labels_path: Path to the labels file
+
+        Attributes:
+            session: ONNX Runtime session for inference
+            labels: List of class labels
+        """
         try:
             self.session = ort.InferenceSession(
                 str(model_path), providers=["CPUExecutionProvider"]
@@ -23,6 +33,14 @@ class ImageClassifier:
             raise ModelError(f"Failed to initialize model: {str(e)}")
 
     def _load_labels(self, labels_path: Path) -> list[str]:
+        """Load the labels from the given file path.
+
+        Args:
+            labels_path: Path to the labels file
+
+        Returns:
+            List of class labels
+        """
         try:
             with open(labels_path) as f:
                 labels = [line.strip() for line in f.readlines()]
@@ -33,6 +51,15 @@ class ImageClassifier:
     def predict(
         self, image: Image.Image, size: tuple[int, int]
     ) -> List[tuple[str, float]]:
+        """Predict the class of the given image.
+
+        Args:
+            image: PIL Image object
+            size: Tuple of image width and height
+
+        Returns:
+            List of tuples containing class name and confidence
+        """
         try:
             input_array = preprocess_image(image, size)
             input_name = self.session.get_inputs()[0].name
@@ -48,7 +75,7 @@ class ImageClassifier:
                 (
                     self.labels[idx],
                     float(probabilities[idx]),
-                )  # Return raw probabilities
+                )
                 for idx in top_indices
             ]
         except Exception as e:

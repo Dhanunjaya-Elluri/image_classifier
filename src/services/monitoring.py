@@ -7,11 +7,10 @@ from ..core.exceptions import PrometheusConnectionError
 
 
 class MonitoringService:
-    def __init__(
-        self,
-        prometheus_url: str = settings.PROMETHEUS_URL,
-    ):
-        self.prometheus_url = prometheus_url
+    """Service for fetching monitoring metrics"""
+
+    def __init__(self):
+        self.prometheus_url = settings.PROMETHEUS_URL
         self.timeout = 5
 
     async def get_metrics(self):

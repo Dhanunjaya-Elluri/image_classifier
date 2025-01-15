@@ -5,7 +5,6 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # API Settings
-    API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Image Classification Service"
 
     # Model Settings
@@ -19,9 +18,11 @@ class Settings(BaseSettings):
     # Image Settings
     IMAGE_SIZE: tuple[int, int] = (224, 224)
 
+    BASE_URL: str = "http://localhost:8000"
+    API_V1_STR: str = "/api/v1"
+
     # Monitoring Settings
     PROMETHEUS_URL: str = "http://localhost:9090"
-    ALLOWED_ORIGINS: list[str] = ["*"]  # For CORS
 
     class Config:
         case_sensitive = True

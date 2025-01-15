@@ -32,7 +32,7 @@ async def classification_page():
 
     with col1:
         st.markdown(
-            '<div class="image-label" style="text-align: center;">📸 Original Image</div>',
+            '<div class="image-label" style="text-align: center;">Original Image</div>',
             unsafe_allow_html=True,
         )
 
@@ -61,7 +61,7 @@ async def classification_page():
 
     with col2:
         st.markdown(
-            '<div class="image-label" style="text-align: center;">🎯 Classification Results</div>',
+            '<div class="image-label" style="text-align: center;">Classification Results</div>',
             unsafe_allow_html=True,
         )
 
@@ -96,16 +96,11 @@ async def classification_page():
                             unsafe_allow_html=True,
                         )
 
-                        # Plot for top 10 predictions
-                        # st.markdown(
-                        #     '<div style="margin-top: 1rem;">Top 10 Predictions</div>',
-                        #     unsafe_allow_html=True,
-                        # )
                         fig = create_predictions_plot(prediction.predictions)
                         st.plotly_chart(fig, use_container_width=True)
 
             except APIConnectionError:
-                st.error("🚫 Unable to connect to the API server")
+                st.error("Unable to connect to the API server")
                 st.warning(
                     "Please make sure the FastAPI server is running. You can start it with:\n"
                     "```bash\n"
@@ -113,15 +108,15 @@ async def classification_page():
                     "```"
                 )
                 st.info(
-                    "💡 Tip: Open a new terminal window and run the command above to start the server"
+                    "Open a new terminal window and run the command above to start the server"
                 )
             except ModelError as e:
-                st.error(f"🤖 Model Error: {str(e)}")
+                st.error(f"Model Error: {str(e)}")
                 st.info(
                     "Please try with a different image or check if the model is loaded"
                 )
             except ValidationError as e:
-                st.error(f"⚠️ Invalid Input: {str(e)}")
+                st.error(f"Invalid Input: {str(e)}")
                 st.info("Please make sure you're uploading a valid image file")
 
 
