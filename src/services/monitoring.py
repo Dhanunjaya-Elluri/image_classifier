@@ -3,6 +3,7 @@
 import requests
 
 from ..core.config import settings
+from ..core.exceptions import APIConnectionError
 
 
 class MonitoringService:
@@ -100,4 +101,4 @@ class MonitoringService:
             }
 
         except requests.exceptions.RequestException as e:
-            raise ConnectionError(f"Failed to fetch metrics: {str(e)}")
+            raise APIConnectionError(f"Failed to fetch metrics: {str(e)}")

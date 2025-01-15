@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from PIL import Image
 
+from ..core.exceptions import APIConnectionError, ModelError, ValidationError
 from ..services.api import APIService
 from .components import create_predictions_plot, display_model_metrics
 
@@ -75,9 +76,25 @@ async def classification_page():
                         top_prediction.class_name,
                         f"{top_prediction.confidence:.1%}",
                     )
-            except ConnectionError as e:
-                st.error(str(e))
-                st.info("Please make sure the FastAPI server is running")
+            except APIConnectionError:
+                st.error("🚫 Unable to connect to the API server")
+                st.warning(
+                    "Please make sure the FastAPI server is running. You can start it with:\n"
+                    "```bash\n"
+                    "uvicorn src.api.main:app --reload --port 8000\n"
+                    "```"
+                )
+                st.info(
+                    "💡 Tip: Open a new terminal window and run the command above to start the server"
+                )
+            except ModelError as e:
+                st.error(f"🤖 Model Error: {str(e)}")
+                st.info(
+                    "Please try with a different image or contact support if the issue persists"
+                )
+            except ValidationError as e:
+                st.error(f"⚠️ Invalid Input: {str(e)}")
+                st.info("Please make sure you're uploading a valid image file")
         else:
             st.markdown(
                 '<div class="image-label">🎯 Classification Results</div>',
@@ -114,9 +131,17 @@ async def model_info_page():
                 "Preprocessing": "Normalization (0-1), NCHW format",
             }
         )
-    except ConnectionError as e:
-        st.error(str(e))
-        st.info("Please make sure the FastAPI server is running")
+    except APIConnectionError:
+        st.error("🚫 Unable to connect to the API server")
+        st.warning(
+            "Please make sure the FastAPI server is running. You can start it with:\n"
+            "```bash\n"
+            "uvicorn src.api.main:app --reload --port 8000\n"
+            "```"
+        )
+        st.info(
+            "💡 Tip: Open a new terminal window and run the command above to start the server"
+        )
 
 
 async def monitoring_page():

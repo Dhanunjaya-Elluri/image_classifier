@@ -4,16 +4,22 @@
 class APIConnectionError(Exception):
     """Raised when there is an error connecting to the API"""
 
-    pass
+    def __init__(self, message: str = "Failed to connect to API"):
+        self.message = message
+        super().__init__(self.message)
 
 
 class ModelError(Exception):
     """Raised when there is an error with the model"""
 
-    pass
+    def __init__(self, message: str = "Model error occurred"):
+        self.message = message
+        super().__init__(self.message)
 
 
 class ValidationError(Exception):
     """Raised when there is a validation error"""
 
-    pass
+    def __init__(self, message: str = "Validation error occurred"):
+        self.message = message
+        super().__init__(self.message)

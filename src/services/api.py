@@ -5,11 +5,11 @@ from typing import Optional
 import requests
 
 from ..api.schemas import ModelInfo, PredictionResponse
-from ..core.config import settings
+from ..core.exceptions import APIConnectionError
 
 
 class APIService:
-    def __init__(self, base_url: str = f"http://localhost:8000{settings.API_V1_STR}"):
+    def __init__(self, base_url: str = "http://localhost:8000/api/v1"):
         self.base_url = base_url
         self.timeout = 5  # seconds
 
@@ -23,7 +23,7 @@ class APIService:
             response.raise_for_status()
             return PredictionResponse(**response.json())
         except requests.exceptions.RequestException as e:
-            raise ConnectionError(f"Failed to connect to API: {str(e)}")
+            raise APIConnectionError(f"Failed to connect to prediction API: {str(e)}")
 
     async def get_model_info(self) -> Optional[ModelInfo]:
         """Get model information"""
@@ -32,7 +32,7 @@ class APIService:
             response.raise_for_status()
             return ModelInfo(**response.json())
         except requests.exceptions.RequestException as e:
-            raise ConnectionError(f"Failed to fetch model info: {str(e)}")
+            raise APIConnectionError(f"Failed to fetch model info: {str(e)}")
 
     async def get_metrics(self) -> str:
         """Get metrics in Prometheus format"""
@@ -41,4 +41,4 @@ class APIService:
             response.raise_for_status()
             return response.text
         except requests.exceptions.RequestException as e:
-            raise ConnectionError(f"Failed to fetch metrics: {str(e)}")
+            raise APIConnectionError(f"Failed to fetch metrics: {str(e)}")
