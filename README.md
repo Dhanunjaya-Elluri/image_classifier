@@ -9,6 +9,7 @@
   - [Project Setup](#project-setup)
     - [Local Setup](#local-setup)
     - [Using Docker](#using-docker)
+  - [Testing](#testing)
 
 ## Description
 
@@ -26,7 +27,6 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 - `pyproject.toml`: Configuration file for the project.
 - `Dockerfile`: Dockerfile for the project.
 - `docker-compose.yml`: Docker compose file for the project.
-
 
 ## Project Setup
 
@@ -90,6 +90,22 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 
 1. Build and run the Docker image:
 
+   Make sure you have Docker installed and running.
+
    ```bash
    docker compose up --build
    ```
+
+## Testing
+
+First, install the dependencies:
+
+```bash
+uv pip install -e .[test]
+```
+
+Then, run the tests:
+
+```bash
+pytest -v --cov
+```

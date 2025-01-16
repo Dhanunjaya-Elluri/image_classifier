@@ -1,9 +1,13 @@
+"""Configuration settings for the image classification service"""
+
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Application settings"""
+
     # API Settings
     PROJECT_NAME: str = "Image Classification Service"
 
@@ -18,14 +22,13 @@ class Settings(BaseSettings):
     # Image Settings
     IMAGE_SIZE: tuple[int, int] = (224, 224)
 
+    API_V1_STR: str = "/api/v1"  # API version prefix
     BASE_URL: str = "http://localhost:8000"
-    API_V1_STR: str = "/api/v1"
 
     # Monitoring Settings
     PROMETHEUS_URL: str = "http://localhost:9090"
 
-    class Config:
-        case_sensitive = True
+    model_config = SettingsConfigDict(case_sensitive=True)
 
 
 settings = Settings()

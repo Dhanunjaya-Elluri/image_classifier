@@ -14,7 +14,7 @@ def create_app() -> FastAPI:
         title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
     )
 
-    # Add monitoring middleware
+    # Add monitoring middleware to track request metrics
     app.add_middleware(MonitoringMiddleware)
 
     # Add health check at root level
@@ -22,7 +22,7 @@ def create_app() -> FastAPI:
 
     # Add metrics endpoint at root level for Prometheus
     @app.get("/metrics", include_in_schema=False)
-    async def metrics():
+    async def metrics() -> PlainTextResponse:
         return PlainTextResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     # Include API routes under version prefix

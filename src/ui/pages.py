@@ -7,19 +7,20 @@ import plotly.graph_objects as go
 import streamlit as st
 from PIL import Image
 
-from ..core.exceptions import (
+from src.core.exceptions import (
     APIConnectionError,
     ModelError,
     PrometheusConnectionError,
     ValidationError,
 )
-from ..services.api import APIService
-from .components import create_predictions_plot
+from src.services.api import APIService
+from src.services.monitoring import MonitoringService
+from src.ui.components import create_predictions_plot
 
 api_service = APIService()
 
 
-async def classification_page():
+async def classification_page() -> None:
     """Classification page content"""
 
     # Initialize session state for results
@@ -107,9 +108,6 @@ async def classification_page():
                     "uvicorn src.api.main:app --reload --port 8000\n"
                     "```"
                 )
-                st.info(
-                    "Open a new terminal window and run the command above to start the server"
-                )
             except ModelError as e:
                 st.error(f"Model Error: {str(e)}")
                 st.info(
@@ -120,7 +118,7 @@ async def classification_page():
                 st.info("Please make sure you're uploading a valid image file")
 
 
-async def model_info_page():
+async def model_info_page() -> None:
     """Model information page content"""
     try:
         info = await api_service.get_model_info()
@@ -164,7 +162,7 @@ async def model_info_page():
             unsafe_allow_html=True,
         )
 
-        # Create three columns for technical details
+        # Create three columns to show technical details as cards
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -213,22 +211,17 @@ async def model_info_page():
             )
 
     except APIConnectionError:
-        st.error("🚫 Unable to connect to the API server")
+        st.error("Unable to connect to the API server")
         st.warning(
             "Please make sure the FastAPI server is running. You can start it with:\n"
             "```bash\n"
             "uvicorn src.api.main:app --reload --port 8000\n"
             "```"
         )
-        st.info(
-            "💡 Tip: Open a new terminal window and run the command above to start the server"
-        )
 
 
-async def monitoring_page():
+async def monitoring_page() -> None:
     """Monitoring page content"""
-    from ..services.monitoring import MonitoringService
-
     monitoring_service = MonitoringService()
 
     # Add refresh rate selector
@@ -249,7 +242,7 @@ async def monitoring_page():
             with metrics_container.container():
                 try:
                     metrics = await monitoring_service.get_metrics()
-                    current_time = int(time.time())  # Get current timestamp
+                    current_time = int(time.time())
 
                     # Display request metrics
                     st.subheader("Request Statistics", divider="rainbow")
@@ -329,15 +322,12 @@ async def monitoring_page():
                         st.info("No prediction requests have been made yet.")
 
                 except PrometheusConnectionError:
-                    st.error("🚫 Unable to connect to Prometheus server")
+                    st.error("Unable to connect to Prometheus server")
                     st.warning(
                         "Please make sure Prometheus is running. You can start it with:\n"
                         "```bash\n"
-                        "docker-compose up prometheus\n"
+                        "prometheus --config.file=prometheus.local.yml\n"
                         "```"
-                    )
-                    st.info(
-                        "💡 Tip: Make sure Docker is running and try the command above in a new terminal window"
                     )
                     break  # Exit the loop if Prometheus is not available
 
@@ -345,7 +335,5 @@ async def monitoring_page():
             time.sleep(refresh_rate)
 
     except Exception as e:
-        st.error(f"⚠️ An unexpected error occurred: {str(e)}")
-        st.info(
-            "Please try refreshing the page or contact support if the issue persists"
-        )
+        st.error(f"An unexpected error occurred: {str(e)}")
+        st.info("Please try refreshing the page")

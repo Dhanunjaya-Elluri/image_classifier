@@ -7,4 +7,5 @@ scrape_configs:
     metrics_path: "/metrics"
     static_configs:
       - targets: ["api:8000"]
-    scheme: "http"
+    scrape_interval: 5s
+    scrape_timeout: 3s

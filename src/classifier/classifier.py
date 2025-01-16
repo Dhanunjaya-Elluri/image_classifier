@@ -1,3 +1,5 @@
+"""Image Classifier module for image classification"""
+
 from pathlib import Path
 from typing import List
 
@@ -13,11 +15,11 @@ from ..utils.preprocessing import preprocess_image
 
 class ImageClassifier:
     def __init__(self, model_path: Path, labels_path: Path):
-        """ImageClassifier for image classification.
+        """Image Classifier module for image classification.
 
         Args:
-            model_path: Path to the ONNX model file
-            labels_path: Path to the labels file
+            model_path (Path): Path to the ONNX model file
+            labels_path (Path): Path to the labels file
 
         Attributes:
             session: ONNX Runtime session for inference
@@ -30,13 +32,13 @@ class ImageClassifier:
             self.labels = self._load_labels(labels_path)
             logger.info(f"Model loaded from {model_path}")
         except Exception as e:
-            raise ModelError(f"Failed to initialize model: {str(e)}")
+            raise ModelError(f"Failed to initialize model: {str(e)}") from e
 
     def _load_labels(self, labels_path: Path) -> list[str]:
         """Load the labels from the given file path.
 
         Args:
-            labels_path: Path to the labels file
+            labels_path (Path): Path to the labels file
 
         Returns:
             List of class labels
@@ -44,9 +46,10 @@ class ImageClassifier:
         try:
             with open(labels_path) as f:
                 labels = [line.strip() for line in f.readlines()]
+                logger.info(f"Labels loaded from {labels_path}")
             return labels
         except Exception as e:
-            raise ModelError(f"Failed to load labels: {str(e)}")
+            raise ModelError(f"Failed to load labels: {str(e)}") from e
 
     def predict(
         self, image: Image.Image, size: tuple[int, int]
@@ -54,8 +57,8 @@ class ImageClassifier:
         """Predict the class of the given image.
 
         Args:
-            image: PIL Image object
-            size: Tuple of image width and height
+            image (PIL.Image.Image): PIL Image object
+            size (tuple[int, int]): Tuple of image width and height
 
         Returns:
             List of tuples containing class name and confidence
@@ -79,4 +82,4 @@ class ImageClassifier:
                 for idx in top_indices
             ]
         except Exception as e:
-            raise ModelError(f"Prediction failed: {str(e)}")
+            raise ModelError(f"Prediction failed: {str(e)}") from e

@@ -1,11 +1,11 @@
-"""UI components for the Streamlit application"""
+"""UI components"""
 
 from typing import List
 
 import pandas as pd
 import plotly.graph_objects as go
 
-from ..api.schemas import PredictionItem
+from src.api.schemas import PredictionItem
 
 
 def create_predictions_plot(predictions: List[PredictionItem]) -> go.Figure:

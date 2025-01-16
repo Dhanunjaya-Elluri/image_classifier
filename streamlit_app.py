@@ -48,9 +48,9 @@ async def main():
     st.markdown(
         """
         <div class="project-description">
-            This is a simple image classification tool that uses a SqueezeNet1.1 model that can classify images into 1000 different
-            categories which you find the list <a href="https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt" target="_blank">here</a>.
-            For more information, please visit the <a href="https://github.com/onnx/models/tree/main/validated/vision/classification/squeezenet" target="_blank">SqueezeNet model documentation</a>.
+            A simple image classification application that uses a SqueezeNet1.1 model to classify images into 1000 different
+            <a href="https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt" target="_blank">categories</a>.
+            For more information about the model, please visit the <a href="https://github.com/onnx/models/tree/main/validated/vision/classification/squeezenet" target="_blank">SqueezeNet model documentation</a>.
         </div>
         """,
         unsafe_allow_html=True,

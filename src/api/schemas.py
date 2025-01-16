@@ -1,3 +1,5 @@
+"""API schemas for the image classification model"""
+
 from typing import List
 
 from pydantic import BaseModel

@@ -11,7 +11,14 @@ SQUEEZENET_LABELS_URL = (
 
 
 def is_safe_url(url: str) -> bool:
-    """Validate URL scheme and domain"""
+    """Validate URL scheme and domain
+
+    Args:
+        url (str): The URL to validate
+
+    Returns:
+        bool: True if the URL is safe, False otherwise
+    """
     try:
         parsed = urlparse(url)
         return parsed.scheme == "https" and parsed.netloc in {
@@ -23,7 +30,12 @@ def is_safe_url(url: str) -> bool:
 
 
 def download_file(url: str, path: Path) -> None:
-    """Safely download a file from a validated URL"""
+    """Safely download a file from a validated URL
+
+    Args:
+        url (str): The URL to download from
+        path (Path): The path to save the file to
+    """
     if not is_safe_url(url):
         raise ValueError(f"Unsafe or invalid URL: {url}")
 
@@ -36,7 +48,7 @@ def download_file(url: str, path: Path) -> None:
         ):
             out_file.write(response.read())
     except Exception as e:
-        raise RuntimeError(f"Failed to download {url}: {str(e)}")
+        raise RuntimeError(f"Failed to download {url}: {str(e)}") from e
 
 
 def download_files():

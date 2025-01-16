@@ -6,6 +6,15 @@ from PIL import Image
 
 
 def preprocess_image(image: Image.Image, size: tuple[int, int]) -> np.ndarray:
+    """Preprocess image for classification
+
+    Args:
+        image (PIL.Image.Image): The image to preprocess
+        size (tuple[int, int]): The size to resize the image to
+
+    Returns:
+        np.ndarray: The preprocessed image
+    """
     # Resize and preprocess image
     image = image.resize(size)
     image_array = np.array(image)
@@ -17,14 +26,21 @@ def preprocess_image(image: Image.Image, size: tuple[int, int]) -> np.ndarray:
 
 
 async def validate_image(contents: bytes) -> Image.Image:
-    """
-    Validates and converts uploaded bytes to PIL Image.
-    Raises HTTPException if image is invalid.
+    """Validates and converts uploaded bytes to PIL Image
+
+    Args:
+        contents (bytes): The image bytes to validate
+
+    Returns:
+        PIL.Image.Image: The validated image
+
+    Raises:
+        HTTPException: If the image is invalid
     """
     try:
         image = Image.open(io.BytesIO(contents)).convert("RGB")
         return image
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid image file"
-        )
+        ) from e

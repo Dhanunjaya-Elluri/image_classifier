@@ -9,11 +9,11 @@ from ..core.exceptions import PrometheusConnectionError
 class MonitoringService:
     """Service for fetching monitoring metrics"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.prometheus_url = settings.PROMETHEUS_URL
         self.timeout = 5
 
-    async def get_metrics(self):
+    async def get_metrics(self) -> dict:
         """Fetch metrics from Prometheus"""
         try:
             # Get total predictions
@@ -50,13 +50,12 @@ class MonitoringService:
             histogram_data = histogram_response.json()
 
             # Process the results with safe value handling
-            total_predictions = max(
-                0,
+            total_predictions = int(
                 float(
                     total_data["data"]["result"][0]["value"][1]
                     if total_data["data"]["result"]
                     else 0
-                ),
+                )
             )
 
             success_rate = min(
@@ -82,7 +81,7 @@ class MonitoringService:
                 for result in results:
                     bucket = result["metric"].get("le", "inf")
                     if bucket != "inf":
-                        current_count = float(result["value"][1])
+                        current_count = int(result["value"][1])
                         # Calculate the actual count in this bucket
                         bucket_count = current_count - prev_count
                         histogram_buckets.append(
