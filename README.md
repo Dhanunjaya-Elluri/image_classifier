@@ -10,6 +10,7 @@
     - [Local Setup](#local-setup)
     - [Using Docker](#using-docker)
   - [Testing](#testing)
+  - [Code Quality](#code-quality)
 
 ## Description
 
@@ -56,7 +57,13 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
    uv pip install -e .
    ```
 
-3. Install and run Prometheus:
+3. Download the model and labels files:
+
+   ```bash
+   python scripts/download_model.py
+   ```
+
+4. Install and run Prometheus:
 
    | Linux/MacOS                   | Windows                      |
    |-------------------------------|------------------------------|
@@ -68,19 +75,19 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
    prometheus --config.file=prometheus.local.yml
    ```
 
-4. Run the FastAPI server:
+5. Run the FastAPI server:
 
    ```bash
    uvicorn src.api.main:app --reload --port 8000
    ```
 
-5. Run the Streamlit app:
+6. Run the Streamlit app:
 
    ```bash
    streamlit run streamlit_app.py
    ```
 
-6. Open the Streamlit app in your browser:
+7. Open the Streamlit app in your browser:
 
    ```bash
    http://localhost:8501
@@ -101,11 +108,28 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 First, install the dependencies:
 
 ```bash
-uv pip install -e .[test]
+uv pip install -e ".[test,lint]"
 ```
 
 Then, run the tests:
 
 ```bash
 pytest -v --cov
+```
+
+## Code Quality
+
+To check the code quality, use the pre-commit hooks.
+
+First, install the pre-commit hooks:
+
+```bash
+uv pip install pre-commit
+pre-commit install
+```
+
+Then, run the pre-commit hooks:
+
+```bash
+pre-commit run --all-files
 ```
