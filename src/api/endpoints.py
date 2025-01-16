@@ -1,11 +1,16 @@
 """API endpoints for the image classification model"""
 
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, UploadFile
 
-from ..core.config import settings
-from ..services.inference import get_classifier
-from ..utils.preprocessing import validate_image
-from .schemas import HealthCheckResponse, ModelInfo, PredictionItem, PredictionResponse
+from src.api.schemas import (
+    HealthCheckResponse,
+    ModelInfo,
+    PredictionItem,
+    PredictionResponse,
+)
+from src.core.config import settings
+from src.services.inference import get_classifier
+from src.utils.preprocessing import validate_image
 
 router = APIRouter()
 
@@ -13,8 +18,6 @@ router = APIRouter()
 @router.post("/predict", response_model=PredictionResponse)
 async def predict(file: UploadFile) -> PredictionResponse:
     """Predict endpoint"""
-    if not file:
-        raise HTTPException(status_code=400, detail="No file provided")
     contents = await file.read()
     image = await validate_image(contents)
 

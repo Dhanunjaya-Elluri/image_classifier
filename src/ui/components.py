@@ -22,25 +22,15 @@ def create_predictions_plot(predictions: List[PredictionItem]) -> go.Figure:
             text=[f"{conf:.1%}" for conf in df["confidence"]],
             textposition="auto",
             marker=dict(
-                color="#0078D4", line=dict(color="rgba(255, 255, 255, 0.5)", width=1)
+                color="#0078D4",
+                line=dict(color="rgba(255, 255, 255, 0.5)", width=1),
             ),
         )
     )
 
     fig.update_layout(
-        title=dict(
-            text="Top 10 Predictions",
-            x=0.5,
-            y=0.95,
-            xanchor="center",
-            yanchor="top",
-            font=dict(size=20, color="white"),
-        ),
         xaxis_title="Confidence",
         yaxis_title="Class",
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="white"),
         xaxis=dict(
             gridcolor="rgba(255,255,255,0.1)",
             tickformat=".1%",
@@ -52,6 +42,10 @@ def create_predictions_plot(predictions: List[PredictionItem]) -> go.Figure:
             tickvals=[i / 10 for i in range(11)],
         ),
         yaxis=dict(gridcolor="rgba(255,255,255,0.1)", autorange="reversed"),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="white"),
+        autosize=True,
         margin=dict(l=20, r=20, t=60, b=20),
         height=400,
     )

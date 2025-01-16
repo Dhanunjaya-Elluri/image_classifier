@@ -21,101 +21,83 @@ api_service = APIService()
 
 
 async def classification_page() -> None:
-    """Classification page content"""
+    """Classification page"""
+    _, center_col, _ = st.columns([1, 2, 1])
 
-    # Initialize session state for results
-    if "results" not in st.session_state:
-        st.session_state.results = None
-    if "previous_file_state" not in st.session_state:
-        st.session_state.previous_file_state = None
+    with center_col:
+        try:
+            # Test API connection
+            await api_service.get_model_info()
 
-    col1, col2 = st.columns(2)
+            st.markdown(
+                "<p>Upload an image to classify</p>",
+                unsafe_allow_html=True,
+            )
 
-    with col1:
-        st.markdown(
-            '<div class="image-label" style="text-align: center;">Original Image</div>',
-            unsafe_allow_html=True,
-        )
+            uploaded_file = st.file_uploader(
+                "Upload Image",
+                type=["jpg", "jpeg", "png"],
+                help="Supported formats: JPG, JPEG, PNG",
+                label_visibility="hidden",
+            )
 
-        uploaded_file = st.file_uploader(
-            "Upload the image file here",
-            type=["jpg", "jpeg", "png"],
-            help="Limit 200MB per file • PNG, JPG, JPEG",
-            key="image_uploader",
-        )
+            result_container = st.empty()
 
-        # Check if file was removed
-        if st.session_state.previous_file_state is not None and uploaded_file is None:
-            st.session_state.previous_file_state = None
-            st.rerun()
+            if uploaded_file is not None:
+                try:
+                    with st.spinner("Analyzing image..."):
+                        image = Image.open(uploaded_file)
+                        uploaded_file.seek(0)
+                        response = await api_service.predict(uploaded_file.read())
 
-        # Update previous state
-        st.session_state.previous_file_state = uploaded_file
+                        if response and response.predictions:
+                            with result_container.container():
+                                top_prediction = response.predictions[0]
+                                formatted_class = top_prediction.class_name.replace(
+                                    "_", " "
+                                ).title()
 
-        if uploaded_file is not None:
-            image = Image.open(uploaded_file)
-            st.image(image, use_container_width=True)
+                                st.markdown(
+                                    "<h2 style='text-align: center;'>Classification Result</h2>",
+                                    unsafe_allow_html=True,
+                                )
+                                st.markdown(
+                                    f"#### Predicted Class: <span style='color: #FF5733;'>{formatted_class}</span>, "
+                                    f"Confidence Score: <span style='color: #FF5733;'>{top_prediction.confidence:.1%}</span>",
+                                    unsafe_allow_html=True,
+                                )
 
-            _, button_col, _ = st.columns([1, 2, 1])
-            with button_col:
-                classify_button = st.button("Classify Image", use_container_width=True)
+                                # Show the image
+                                st.image(
+                                    image,
+                                    use_container_width=True,
+                                    caption="Uploaded Image",
+                                )
 
-    with col2:
-        st.markdown(
-            '<div class="image-label" style="text-align: center;">Classification Results</div>',
-            unsafe_allow_html=True,
-        )
+                                # Show top 10 predictions
+                                with st.expander("Show Top 10 Predictions"):
+                                    predictions_fig = create_predictions_plot(
+                                        response.predictions
+                                    )
+                                    st.plotly_chart(
+                                        predictions_fig,
+                                        use_container_width=True,
+                                        config={"displayModeBar": False},
+                                    )
 
-        results_container = st.empty()
+                except (APIConnectionError, ModelError, ValidationError) as e:
+                    st.error(f"Error: {str(e)}")
+                except Exception as e:
+                    st.error(f"An unexpected error occurred: {str(e)}")
 
-        if uploaded_file is None:
-            with results_container.container():
-                st.markdown(
-                    '<div style="color: #C6CDD5; text-align: center; padding: 2rem;">'
-                    'Upload an image and click "Classify Image" to see the results here.'
-                    "</div>",
-                    unsafe_allow_html=True,
-                )
-        elif classify_button:
-            try:
-                with st.spinner("Processing image..."):
-                    prediction = await api_service.predict(uploaded_file.getvalue())
-                    st.session_state.results = prediction
-
-                    with results_container.container():
-                        # Top prediction with custom styling
-                        top_prediction = prediction.predictions[0]
-                        st.markdown(
-                            f"""
-                            <div style="font-size: 1.2em; color: #f8f9f9; margin-bottom: 12px;">
-                                Predicted Class: <span style="color: #4ade80; font-weight: 500;">{top_prediction.class_name.replace('_', ' ').title()}</span>
-                            </div>
-                            <div style="font-size: 1.2em; color: #f8f9f9; margin-bottom: 12px;">
-                                Confidence: <span style="color: #4ade80; font-weight: 500;">{top_prediction.confidence:.1%}</span>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-                        fig = create_predictions_plot(prediction.predictions)
-                        st.plotly_chart(fig, use_container_width=True)
-
-            except APIConnectionError:
-                st.error("Unable to connect to the API server")
-                st.warning(
-                    "Please make sure the FastAPI server is running. You can start it with:\n"
-                    "```bash\n"
-                    "uvicorn src.api.main:app --reload --port 8000\n"
-                    "```"
-                )
-            except ModelError as e:
-                st.error(f"Model Error: {str(e)}")
-                st.info(
-                    "Please try with a different image or check if the model is loaded"
-                )
-            except ValidationError as e:
-                st.error(f"Invalid Input: {str(e)}")
-                st.info("Please make sure you're uploading a valid image file")
+        except APIConnectionError:
+            st.error("Unable to connect to the API server")
+            st.warning(
+                "Please make sure the FastAPI server is running. You can start it with:\n"
+                "```bash\n"
+                "uvicorn src.api.main:app --reload --port 8000\n"
+                "```"
+            )
 
 
 async def model_info_page() -> None:
@@ -123,14 +105,11 @@ async def model_info_page() -> None:
     try:
         info = await api_service.get_model_info()
 
-        # Model description
         st.markdown("### Model Description")
         st.write(info.description)
 
-        # Technical details
         st.markdown("### Technical Details")
 
-        # Custom CSS for cards
         st.markdown(
             """
             <style>
@@ -162,7 +141,6 @@ async def model_info_page() -> None:
             unsafe_allow_html=True,
         )
 
-        # Create three columns to show technical details as cards
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -235,7 +213,6 @@ async def monitoring_page() -> None:
     )
 
     try:
-        # Create placeholder for metrics
         metrics_container = st.empty()
 
         while True:
@@ -244,82 +221,102 @@ async def monitoring_page() -> None:
                     metrics = await monitoring_service.get_metrics()
                     current_time = int(time.time())
 
-                    # Display request metrics
-                    st.subheader("Request Statistics", divider="rainbow")
+                    # Create two columns for the layout
+                    left_col, right_col = st.columns(2)
 
-                    col1, col2, col3 = st.columns(3)
+                    # Left Column: Request Statistics
+                    with left_col:
+                        st.subheader("Request Statistics", divider="blue")
+                        total_requests = metrics["requests"]["total"]
 
-                    total_requests = metrics["requests"]["total"]
-
-                    col1.metric(
-                        "Total Predictions",
-                        f"{int(total_requests):,}",
-                        help="Total number of predictions made",
-                    )
-
-                    if total_requests > 0:
-                        success_rate = (
-                            metrics["requests"]["success"] / total_requests * 100
-                        )
-                        col2.metric(
-                            "Success Rate",
-                            f"{success_rate:.1f}%",
-                            help="Percentage of successful predictions",
+                        st.metric(
+                            "Total Predictions",
+                            f"{int(total_requests):,}",
+                            help="Total number of predictions made",
                         )
 
-                        col3.metric(
-                            "Error Rate",
-                            f"{(100-success_rate):.1f}%",
-                            help="Percentage of failed predictions",
-                        )
-                    else:
-                        col2.metric(
-                            "Success Rate", "N/A", help="No predictions made yet"
-                        )
-                        col3.metric("Error Rate", "N/A", help="No predictions made yet")
-
-                    # Display response time distribution
-                    st.subheader("Response Time Distribution", divider="rainbow")
-
-                    if metrics["response_times"]:
-                        df = pd.DataFrame(metrics["response_times"])
-
-                        # Create range labels
-                        df["range"] = pd.Series(
-                            [f"0-{df['bucket'][0]}s"]
-                            + [
-                                f"{df['bucket'][i-1]}-{v}s"
-                                for i, v in enumerate(df["bucket"][1:], 1)
-                            ]
-                        )
-
-                        fig = go.Figure(
-                            go.Bar(
-                                x=df["range"],
-                                y=df["count"],
-                                text=[f"{int(count):,}" for count in df["count"]],
-                                textposition="auto",
+                        if total_requests > 0:
+                            success_rate = (
+                                metrics["requests"]["success"] / total_requests * 100
                             )
-                        )
+                            st.metric(
+                                "Success Rate",
+                                f"{success_rate:.1f}%",
+                                help="Percentage of successful predictions",
+                            )
+                            st.metric(
+                                "Error Rate",
+                                f"{(100-success_rate):.1f}%",
+                                help="Percentage of failed predictions",
+                            )
+                        else:
+                            st.metric(
+                                "Success Rate",
+                                "N/A",
+                                help="No predictions made yet",
+                            )
+                            st.metric(
+                                "Error Rate",
+                                "N/A",
+                                help="No predictions made yet",
+                            )
 
-                        fig.update_layout(
-                            title="Response Time Distribution",
-                            xaxis_title="Response Time Range",
-                            yaxis_title="Number of Requests",
-                            plot_bgcolor="rgba(0,0,0,0)",
-                            paper_bgcolor="rgba(0,0,0,0)",
-                            font=dict(color="white"),
-                            showlegend=False,
-                        )
+                    # Right Column: Response Time Distribution
+                    with right_col:
+                        st.subheader("Response Time Distribution", divider="blue")
+                        if metrics["response_times"]:
+                            df = pd.DataFrame(metrics["response_times"])
 
-                        # Use timestamp in key to make it unique for each update
-                        st.plotly_chart(
-                            fig,
-                            use_container_width=True,
-                            key=f"latency_histogram_{current_time}",
-                        )
-                    else:
-                        st.info("No prediction requests have been made yet.")
+                            # Create range labels
+                            ranges = []
+                            for i, row in enumerate(df.itertuples()):
+                                if i == 0:
+                                    ranges.append("0-100ms")
+                                else:
+                                    prev_bucket = df["bucket"].iloc[i - 1]
+                                    curr_bucket = row.bucket
+                                    if curr_bucket == float("inf"):
+                                        ranges.append(">1000ms")
+                                    else:
+                                        ranges.append(
+                                            f"{int(prev_bucket*1000)}-{int(curr_bucket*1000)}ms"
+                                        )
+
+                            df["range"] = ranges
+
+                            fig = go.Figure(
+                                go.Bar(
+                                    x=df["range"],
+                                    y=df["count"],
+                                    text=[f"{int(count):,}" for count in df["count"]],
+                                    textposition="auto",
+                                    marker=dict(
+                                        color="#0078D4",
+                                        line=dict(
+                                            color="rgba(255, 255, 255, 0.5)", width=1
+                                        ),
+                                    ),
+                                )
+                            )
+
+                            fig.update_layout(
+                                xaxis_title="Response Time (milliseconds)",
+                                yaxis_title="Number of Requests",
+                                plot_bgcolor="rgba(0,0,0,0)",
+                                paper_bgcolor="rgba(0,0,0,0)",
+                                font=dict(color="white"),
+                                showlegend=False,
+                                margin=dict(l=20, r=20, t=20, b=20),
+                                height=350,
+                            )
+
+                            st.plotly_chart(
+                                fig,
+                                use_container_width=True,
+                                key=f"latency_histogram_{current_time}",
+                            )
+                        else:
+                            st.info("No prediction requests have been made yet.")
 
                 except PrometheusConnectionError:
                     st.error("Unable to connect to Prometheus server")
@@ -329,9 +326,7 @@ async def monitoring_page() -> None:
                         "prometheus --config.file=prometheus.local.yml\n"
                         "```"
                     )
-                    break  # Exit the loop if Prometheus is not available
 
-            # Wait for the specified refresh interval
             time.sleep(refresh_rate)
 
     except Exception as e:

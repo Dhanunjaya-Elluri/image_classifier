@@ -2,9 +2,9 @@
 
 import requests
 
-from ..api.schemas import ModelInfo, PredictionResponse
-from ..core.config import settings
-from ..core.exceptions import APIConnectionError
+from src.api.schemas import ModelInfo, PredictionResponse
+from src.core.config import settings
+from src.core.exceptions import APIConnectionError
 
 
 class APIService:

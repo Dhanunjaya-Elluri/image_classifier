@@ -18,10 +18,12 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 
 ## Project Structure
 
+- `scripts/`: Contains the scripts to download the model and labels files.
 - `src/`: Source code for the project.
-  - `api/`: FastAPI application module.
-  - `core/`: Core configuration and settings.
-  - `services/`: Service modules for the project.
+  - `api/`: Contains the main application with endpoints and schemas.
+  - `classifier/`: Contains the classifier model to predict the image class.
+  - `core/`: Core configuration, settings, exceptions and middleware.
+  - `services/`: Service modules API and Monitoring.
   - `ui/`: Streamlit application module.
   - `utils/`: Utility functions for the project.
 - `streamlit_app.py`: Main Streamlit app.
@@ -47,9 +49,9 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 
    Activate the virtual environment:
 
-   | Linux/MacOS                   | Windows                   |
-   |-------------------------------|---------------------------|
-   | `source .venv/bin/activate`   | `.venv\Scripts\activate`  |
+   | Linux/MacOS                 | Windows                  |
+   | --------------------------- | ------------------------ |
+   | `source .venv/bin/activate` | `.venv\Scripts\activate` |
 
    Install the dependencies:
 
@@ -65,9 +67,9 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 
 4. Install and run Prometheus:
 
-   | Linux/MacOS                   | Windows                      |
-   |-------------------------------|------------------------------|
-   | `brew install prometheus`     | `choco install prometheus`   |
+   | Linux/MacOS               | Windows                    |
+   | ------------------------- | -------------------------- |
+   | `brew install prometheus` | `choco install prometheus` |
 
    Start Prometheus:
 

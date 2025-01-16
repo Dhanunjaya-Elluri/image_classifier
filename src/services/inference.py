@@ -1,7 +1,7 @@
 from functools import lru_cache
 
-from ..classifier.classifier import ImageClassifier
-from ..core.config import settings
+from src.classifier.classifier import ImageClassifier
+from src.core.config import settings
 
 
 @lru_cache()

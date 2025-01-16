@@ -9,8 +9,8 @@ from loguru import logger
 from PIL import Image
 from scipy.special import softmax
 
-from ..core.exceptions import ModelError
-from ..utils.preprocessing import preprocess_image
+from src.core.exceptions import ModelError
+from src.utils.preprocessing import preprocess_image
 
 
 class ImageClassifier:

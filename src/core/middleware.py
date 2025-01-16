@@ -7,7 +7,6 @@ from fastapi import Request, Response
 from prometheus_client import Counter, Histogram
 from starlette.middleware.base import BaseHTTPMiddleware
 
-# Prometheus metrics
 REQUESTS_TOTAL = Counter(
     "image_classifier_predictions_total",
     "Total number of predictions",
@@ -17,7 +16,7 @@ REQUESTS_TOTAL = Counter(
 PREDICTION_LATENCY = Histogram(
     "image_classifier_prediction_seconds",
     "Time spent processing prediction",
-    buckets=[0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0],
+    buckets=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
 )
 
 
