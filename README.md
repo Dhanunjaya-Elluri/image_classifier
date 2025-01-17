@@ -11,6 +11,7 @@
     - [Using Docker](#using-docker)
   - [Testing](#testing)
   - [Code Quality](#code-quality)
+  - [Monitoring with Prometheus](#monitoring-with-prometheus)
 
 ## Description
 
@@ -19,17 +20,20 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 ## Project Structure
 
 - `scripts/`: Contains the scripts to download the model and labels files.
+- `models/`: Contains the SqueezeNet1.1 model and labels files.
 - `src/`: Source code for the project.
   - `api/`: Contains the main application with endpoints and schemas.
   - `classifier/`: Contains the classifier model to predict the image class.
   - `core/`: Core configuration, settings, exceptions and middleware.
-  - `services/`: Service modules API and Monitoring.
-  - `ui/`: Streamlit application module.
+  - `services/`: Service modules for API and Monitoring.
+  - `ui/`: Streamlit pages for Classification, Model Info and Monitoring. Also, plot to show top 10 predictions.
   - `utils/`: Utility functions for the project.
-- `streamlit_app.py`: Main Streamlit app.
+- `tests/`: Contains the unit and integration tests.
+- `streamlit_app.py`: Entry point for the Streamlit app.
 - `pyproject.toml`: Configuration file for the project.
 - `Dockerfile`: Dockerfile for the project.
 - `docker-compose.yml`: Docker compose file for the project.
+- `prometheus.local.yml`: Prometheus configuration file.
 
 ## Project Setup
 
@@ -135,3 +139,49 @@ Then, run the pre-commit hooks:
 ```bash
 pre-commit run --all-files
 ```
+
+## Monitoring with Prometheus
+
+To view the Prometheus dashboard, open the following URL in your browser (make sure Prometheus is running):
+
+```bash
+http://localhost:9090
+```
+
+Click on the `Graph` tab and enter the following queries to view the request metrics:
+
+1. For total number of predictions:
+
+   ```bash
+   image_classifier_predictions_total
+   ```
+
+2. For successful predictions:
+
+   ```bash
+   image_classifier_predictions_total{status="200"}
+   ```
+
+3. For error predictions:
+
+   ```bash
+   image_classifier_predictions_total{status!="200"}
+   ```
+
+4. For prediction latency (response time) histogram:
+
+   ```bash
+   rate(image_classifier_prediction_seconds_bucket[5m])
+   ```
+
+5. For average response time:
+
+   ```bash
+   rate(image_classifier_prediction_seconds_sum[5m]) / rate(image_classifier_prediction_seconds_count[5m])
+   ```
+
+6. For success rate percentage:
+
+   ```bash
+   sum(image_classifier_predictions_total{status="200"}) / sum(image_classifier_predictions_total) * 100
+   ```
