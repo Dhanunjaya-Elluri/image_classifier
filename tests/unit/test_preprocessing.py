@@ -8,6 +8,7 @@ from PIL import Image
 from src.utils.preprocessing import preprocess_image, validate_image
 
 
+@pytest.mark.unit
 def test_preprocess_image(test_image):
     """Test image preprocessing"""
     processed = preprocess_image(test_image, (224, 224))
@@ -17,6 +18,7 @@ def test_preprocess_image(test_image):
     assert np.all((processed >= 0) & (processed <= 1))
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_validate_image(test_image_bytes):
     """Test image validation"""
@@ -25,6 +27,7 @@ async def test_validate_image(test_image_bytes):
     assert image.mode == "RGB"
 
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_validate_invalid_image():
     """Test validation with invalid image"""

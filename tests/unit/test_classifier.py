@@ -6,12 +6,14 @@ import pytest
 from src.core.exceptions import ModelError
 
 
+@pytest.mark.unit
 def test_classifier_initialization(classifier):
     """Test classifier initialization"""
     assert classifier.session is not None
     assert len(classifier.labels) > 0
 
 
+@pytest.mark.unit
 def test_classifier_predict(classifier, test_image):
     """Test prediction functionality"""
     predictions = classifier.predict(test_image, (224, 224))
@@ -23,6 +25,7 @@ def test_classifier_predict(classifier, test_image):
         assert 0 <= confidence <= 1
 
 
+@pytest.mark.unit
 def test_classifier_invalid_image(classifier):
     """Test prediction with invalid image"""
     invalid_image = np.zeros((224, 224))  # Wrong format

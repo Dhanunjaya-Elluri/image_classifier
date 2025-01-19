@@ -117,10 +117,22 @@ First, install the dependencies:
 uv pip install -e ".[test,lint]"
 ```
 
-Then, run the tests:
+To run unit tests:
 
 ```bash
-pytest -v --cov
+pytest -v -m unit
+```
+
+To run integration tests:
+
+```bash
+pytest -v -m integration
+```
+
+To run all tests:
+
+```bash
+pytest -v
 ```
 
 ## Code Quality
