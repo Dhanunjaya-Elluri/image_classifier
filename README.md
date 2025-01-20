@@ -39,13 +39,19 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 
 ### Local Setup
 
-1. For this project, use the `uv` package manager. So, first install the `uv` package manager by running the following command:
+1. Clone this repository.
+
+   ```bash
+   git clone https://github.com/your-username/image-classifier.git
+   ```
+
+2. For this project, use the `uv` package manager. So, first install the `uv` package manager by running the following command:
 
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-2. Create a virtual environment and install the dependencies:
+3. Create a virtual environment and install the dependencies:
 
    ```bash
    uv venv -p 3.12 --seed
@@ -63,13 +69,13 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
    uv pip install -e .
    ```
 
-3. Download the model and labels files:
+4. Download the model and labels files:
 
    ```bash
    python scripts/download_model.py
    ```
 
-4. Install and run Prometheus:
+5. Install and run Prometheus:
 
    | Linux/MacOS               | Windows                    |
    | ------------------------- | -------------------------- |
@@ -81,19 +87,19 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
    prometheus --config.file=prometheus.local.yml
    ```
 
-5. Run the FastAPI server:
+6. Run the FastAPI server:
 
    ```bash
    uvicorn src.api.main:app --reload --port 8000
    ```
 
-6. Run the Streamlit app:
+7. Run the Streamlit app:
 
    ```bash
    streamlit run streamlit_app.py
    ```
 
-7. Open the Streamlit app in your browser:
+8. Open the Streamlit app in your browser:
 
    ```bash
    http://localhost:8501
