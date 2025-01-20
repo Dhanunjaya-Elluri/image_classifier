@@ -42,7 +42,7 @@ This project is a simple image classifier built using FastAPI, Streamlit, and Pr
 1. Clone this repository.
 
    ```bash
-   git clone https://github.com/your-username/image-classifier.git
+   git clone https://github.com/Dhanunjaya-Elluri/image_classifier.git
    ```
 
 2. For this project, use the `uv` package manager. So, first install the `uv` package manager by running the following command:
